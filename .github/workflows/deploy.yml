@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  deploy:
+  deploy-production:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,10 +22,14 @@ jobs:
 
       - name: Sync site to S3
         run: |
-          aws s3 sync site/ s3://${{ secrets.S3_BUCKET }} --delete
+          aws s3 sync site/ s3://${{ secrets.S3_BUCKET }} --delete --exact-timestamps
 
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
             --paths "/index.html" "/404.html" "/robots.txt" "/assets/*"
+
+      - name: Verify site is up
+        run: |
+          curl -I https://${{ secrets.S3_BUCKET }} | grep "200"

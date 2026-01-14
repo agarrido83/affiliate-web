@@ -4,34 +4,35 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
       - "site/**"
 
 jobs:
-  deploy-production:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Sync site to S3
+      - name: Deploy to STAGING
+        if: github.ref == 'refs/heads/dev'
         run: |
-          aws s3 sync site/ s3://${{ secrets.S3_BUCKET }} --delete --exact-timestamps
+          aws s3 sync site/ s3://${{ secrets.S3_BUCKET_STAGING }} --delete
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_STAGING }} \
+            --paths "/*"
 
-      - name: Invalidate CloudFront cache
+      - name: Deploy to PRODUCTION
+        if: github.ref == 'refs/heads/main'
         run: |
+          aws s3 sync site/ s3://${{ secrets.S3_BUCKET }} --delete
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/index.html" "/404.html" "/robots.txt" "/assets/*"
-
-      - name: Verify site is up
-        run: |
-          curl -I https://${{ secrets.S3_BUCKET }} | grep "200"
+            --paths "/*"

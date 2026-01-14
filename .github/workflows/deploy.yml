@@ -31,6 +31,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: DEBUG — listar site
+        run: |
+          echo "Contenido de site/:"
+          ls -la site/
+          echo "Primeras líneas de index.html:"
+          head -n 20 site/index.html
+        
       - name: Sync site to S3 (STAGING)
         run: |
           aws s3 sync site/ s3://${{ secrets.S3_BUCKET_STAGING }} \

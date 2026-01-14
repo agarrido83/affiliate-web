@@ -1,38 +1,72 @@
-name: Deploy static site to AWS
+name: CI/CD Static Site to AWS
 
 on:
   push:
     branches:
-      - main
       - dev
+      - main
+    paths:
+      - "site/**"
+
+  pull_request:
+    branches:
+      - main
     paths:
       - "site/**"
 
 jobs:
-  deploy:
+  deploy-staging:
+    name: Deploy to STAGING
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Deploy to STAGING
-        if: github.ref == 'refs/heads/dev'
+      - name: Sync site to S3 (STAGING)
         run: |
-          aws s3 sync site/ s3://${{ secrets.S3_BUCKET_STAGING }} --delete
+          aws s3 sync site/ s3://${{ secrets.S3_BUCKET_STAGING }} \
+            --delete \
+            --exact-timestamps
+
+      - name: Invalidate CloudFront cache (STAGING)
+        run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID_STAGING }} \
-            --paths "/*"
+            --paths "/index.html" "/404.html" "/robots.txt" "/assets/*"
 
-      - name: Deploy to PRODUCTION
-        if: github.ref == 'refs/heads/main'
+  deploy-production:
+    name: Deploy to PRODUCTION
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync site to S3 (PRODUCTION)
         run: |
-          aws s3 sync site/ s3://${{ secrets.S3_BUCKET }} --delete
+          aws s3 sync site/ s3://${{ secrets.S3_BUCKET }} \
+            --delete \
+            --exact-timestamps
+
+      - name: Invalidate CloudFront cache (PRODUCTION)
+        run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
+            --paths "/index.html" "/404.html" "/robots.txt" "/assets/*"

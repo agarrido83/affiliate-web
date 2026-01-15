@@ -79,4 +79,22 @@
     <priority>0.7</priority>
   </url>
 
+  <url>
+    <loc>https://micomparadortech.com/reviews/xiaomi-redmi-note-13-pro-plus.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://micomparadortech.com/reviews/oneplus-nord-ce-3-lite.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://micomparadortech.com/reviews/motorola-moto-g54.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>

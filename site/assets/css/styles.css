@@ -178,3 +178,25 @@ footer {
     font-size: 1.4rem;
   }
 }
+
+/* =========================
+   TABLA COMPARATIVA
+========================= */
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.comparison-table th,
+.comparison-table td {
+  border: 1px solid var(--color-border);
+  padding: 0.75rem;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.comparison-table th {
+  background-color: #f9fafb;
+}
+

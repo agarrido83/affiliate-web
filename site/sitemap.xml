@@ -59,6 +59,24 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  
+  <url>
+    <loc>https://micomparadortech.com/reviews/sony-wf-1000xm5.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://micomparadortech.com/reviews/jbl-tune-770nc.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://micomparadortech.com/reviews/jabra-elite-7-pro.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 
   <url>
     <loc>https://micomparadortech.com/reviews/soundcore-life-q30.html</loc>

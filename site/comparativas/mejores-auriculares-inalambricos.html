@@ -276,5 +276,23 @@
       </p>
     </div>
   </footer>
+  
+  <script>
+  function trackEvent(event, target) {
+    fetch("https://yofj9h4oxk.execute-api.eu-west-1.amazonaws.com/event", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        event: event,
+        page: window.location.pathname,
+        target: target,
+        timestamp: Math.floor(Date.now() / 1000)
+      })
+    }).catch(() => {});
+  }
+  </script>
+  
 </body>
 </html>
